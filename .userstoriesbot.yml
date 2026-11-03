@@ -1,0 +1,14 @@
+# Showcase fork only (never part of an upstream pull request).
+version: 1
+app:
+  install: "npm ci && npm run build && NODE_ENV=production npm run distro -w dmn-js"
+  start: python3 -m http.server {port} --bind 0.0.0.0
+  url: http://localhost:{port}
+  readyPath: /demo/
+  readyStatus: 200
+  runtime: node24
+  env:
+    NODE_ENV: development
+demo:
+  maxVideos: 1
+  beforePass: true

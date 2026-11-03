@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <title>dmn-js expression language badge demo</title>
+  <link rel="stylesheet" href="../packages/dmn-js/dist/assets/dmn-js-shared.css">
+  <link rel="stylesheet" href="../packages/dmn-js/dist/assets/dmn-js-drd.css">
+  <link rel="stylesheet" href="../packages/dmn-js/dist/assets/dmn-js-decision-table.css">
+  <link rel="stylesheet" href="../packages/dmn-js/dist/assets/dmn-js-decision-table-controls.css">
+  <link rel="stylesheet" href="../packages/dmn-js/dist/assets/dmn-js-literal-expression.css">
+  <link rel="stylesheet" href="../packages/dmn-js/dist/assets/dmn-js-boxed-expression.css">
+  <link rel="stylesheet" href="../packages/dmn-js/dist/assets/dmn-js-boxed-expression-controls.css">
+  <link rel="stylesheet" href="../packages/dmn-js/dist/assets/dmn-font/css/dmn-embedded.css">
+  <style>
+    html, body { margin: 0; height: 100%; font-family: sans-serif; }
+    #canvas { height: 100%; padding: 20px; box-sizing: border-box; }
+  </style>
+</head>
+<body>
+  <div id="canvas"></div>
+
+  <script src="../packages/dmn-js/dist/dmn-modeler.development.js"></script>
+  <script>
+    // Every rule cell below uses JUEL instead of the default FEEL,
+    // so every rule cell should carry the blue expression language badge.
+    var xml = `<?xml version="1.0" encoding="UTF-8"?>
+<definitions xmlns="https://www.omg.org/spec/DMN/20191111/MODEL/" id="definitions" name="Dinner" namespace="http://camunda.org/schema/1.0/dmn">
+  <decision id="dish" name="Dish">
+    <decisionTable id="decisionTable">
+      <input id="input1" label="Season">
+        <inputExpression id="inputExpression1" typeRef="string">
+          <text>season</text>
+        </inputExpression>
+      </input>
+      <output id="output1" label="Dish" name="dish" typeRef="string" />
+      <rule id="rule1">
+        <inputEntry id="inputEntry1" expressionLanguage="juel"><text>\${season == "Fall"}</text></inputEntry>
+        <outputEntry id="outputEntry1" expressionLanguage="juel"><text>\${"Spareribs"}</text></outputEntry>
+      </rule>
+      <rule id="rule2">
+        <inputEntry id="inputEntry2" expressionLanguage="juel"><text>\${season == "Winter"}</text></inputEntry>
+        <outputEntry id="outputEntry2" expressionLanguage="juel"><text>\${"Roastbeef"}</text></outputEntry>
+      </rule>
+      <rule id="rule3">
+        <inputEntry id="inputEntry3" expressionLanguage="juel"><text>\${season == "Spring"}</text></inputEntry>
+        <outputEntry id="outputEntry3" expressionLanguage="juel"><text>\${"Stew"}</text></outputEntry>
+      </rule>
+      <rule id="rule4">
+        <inputEntry id="inputEntry4" expressionLanguage="juel"><text>\${season == "Summer"}</text></inputEntry>
+        <outputEntry id="outputEntry4" expressionLanguage="juel"><text>\${"Light Salad"}</text></outputEntry>
+      </rule>
+    </decisionTable>
+  </decision>
+</definitions>`;
+
+    var modeler = new DmnJS({
+      container: '#canvas',
+      common: {
+        expressionLanguages: {
+          options: [
+            { value: 'feel', label: 'FEEL' },
+            { value: 'juel', label: 'JUEL' }
+          ],
+          defaults: { inputCell: 'feel', outputCell: 'feel' }
+        }
+      }
+    });
+
+    modeler.importXML(xml).then(function() {
+      var view = modeler.getViews().find(function(v) {
+        return v.type === 'decisionTable';
+      });
+
+      return modeler.open(view);
+    }).then(function() {
+      document.body.setAttribute('data-ready', 'true');
+    }).catch(function(err) {
+      console.error(err);
+    });
+  </script>
+</body>
+</html>
